@@ -14,5 +14,6 @@ __pycache__/
 
 # Build artifacts
 *.zip
+!releases/*.zip
 *.tar.gz
 *.rar
