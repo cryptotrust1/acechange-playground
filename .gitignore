@@ -11,3 +11,8 @@ __pycache__/
 .venv/
 .env
 .env.*
+
+# Build artifacts
+*.zip
+*.tar.gz
+*.rar
