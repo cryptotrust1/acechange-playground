@@ -1,0 +1,135 @@
+/**
+ * Claude SEO Admin Styles
+ */
+
+/* Meta Box */
+.claude-seo-meta-box {
+    padding: 10px 0;
+}
+
+.claude-seo-score-display {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.score-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: bold;
+    margin: 10px auto;
+    border: 5px solid #ddd;
+}
+
+.score-circle[data-score] {
+    border-color: #dc3232; /* Red for low scores */
+}
+
+.score-circle[data-score*="6"],
+.score-circle[data-score*="7"] {
+    border-color: #ffb900; /* Orange for medium scores */
+}
+
+.score-circle[data-score*="8"],
+.score-circle[data-score*="9"],
+.score-circle[data-score="100"] {
+    border-color: #46b450; /* Green for high scores */
+}
+
+.char-count {
+    float: right;
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.char-count .count {
+    font-weight: bold;
+}
+
+/* Analysis Results */
+#claude-seo-analysis-results {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-left: 4px solid #2271b1;
+}
+
+.seo-issues {
+    list-style: none;
+    margin: 10px 0;
+    padding: 0;
+}
+
+.seo-issues li {
+    padding: 8px;
+    margin: 5px 0;
+    border-left: 3px solid #dc3232;
+    background: #fff;
+}
+
+.seo-issues li.severity-medium {
+    border-left-color: #ffb900;
+}
+
+.seo-issues li.severity-low {
+    border-left-color: #46b450;
+}
+
+/* Dashboard */
+.claude-seo-dashboard {
+    max-width: 1200px;
+}
+
+.seo-widget {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.seo-widget h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Loading States */
+.claude-seo-loading {
+    text-align: center;
+    padding: 20px;
+}
+
+.claude-seo-loading::after {
+    content: "⏳ Analyzing with Claude AI...";
+    display: block;
+    margin-top: 10px;
+    color: #666;
+}
+
+/* Buttons */
+.claude-ai-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff !important;
+    border: none;
+    text-shadow: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.claude-ai-button:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .score-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 24px;
+    }
+}
