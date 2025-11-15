@@ -1,0 +1,165 @@
+/**
+ * Admin štýly pre AceChange SEO Plugin
+ */
+
+.acechange-seo-admin {
+    max-width: 1200px;
+}
+
+.acechange-seo-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.acechange-seo-header h2 {
+    color: white;
+    margin: 0 0 10px 0;
+    font-size: 24px;
+}
+
+.acechange-seo-header .description {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+}
+
+.acechange-seo-info-box {
+    background: #f0f9ff;
+    border-left: 4px solid #3b82f6;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 4px;
+}
+
+.acechange-seo-info-box h3 {
+    margin-top: 0;
+    color: #1e40af;
+}
+
+.acechange-seo-info-box ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.acechange-seo-info-box li {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.acechange-seo-docs {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.acechange-seo-docs h2 {
+    color: #1e293b;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+    margin-top: 40px;
+}
+
+.acechange-seo-docs h3 {
+    color: #334155;
+    margin-top: 30px;
+}
+
+.acechange-seo-docs h4 {
+    color: #475569;
+    margin-top: 20px;
+}
+
+.acechange-seo-docs ul,
+.acechange-seo-docs ol {
+    line-height: 1.8;
+}
+
+.acechange-seo-docs code {
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.acechange-seo-docs blockquote {
+    border-left: 4px solid #3b82f6;
+    padding-left: 20px;
+    margin: 20px 0;
+    font-style: italic;
+    color: #64748b;
+}
+
+.acechange-seo-docs table {
+    margin: 20px 0;
+}
+
+.acechange-seo-compliance {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.acechange-seo-compliance .notice {
+    margin: 20px 0;
+    padding: 15px;
+}
+
+.acechange-seo-compliance h2 {
+    color: #1e293b;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.acechange-seo-compliance h3 {
+    color: #334155;
+    margin-top: 30px;
+}
+
+.acechange-seo-compliance h4 {
+    color: #475569;
+    margin-top: 20px;
+}
+
+.acechange-seo-compliance ul,
+.acechange-seo-compliance ol {
+    line-height: 1.8;
+}
+
+.acechange-seo-compliance blockquote {
+    border-left: 4px solid #10b981;
+    padding-left: 20px;
+    margin: 20px 0;
+    font-style: italic;
+    color: #64748b;
+    background: #f0fdf4;
+    padding: 15px 20px;
+}
+
+.acechange-seo-compliance table {
+    margin: 20px 0;
+}
+
+/* Meta box štýly */
+#acechange_seo_meta .form-table th {
+    width: 200px;
+}
+
+#acechange_seo_meta textarea {
+    width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .acechange-seo-header {
+        padding: 20px;
+    }
+
+    .acechange-seo-header h2 {
+        font-size: 20px;
+    }
+}
