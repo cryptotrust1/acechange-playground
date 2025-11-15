@@ -336,7 +336,7 @@ class AI_SEO_Manager_Autopilot_Engine {
     public function execute_approved_recommendation($recommendation_id, $user_id) {
         global $wpdb;
 
-        $table = $this->db->get_table('recommendations');
+        $table = esc_sql($this->db->get_table('recommendations'));
         $recommendation = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM {$table} WHERE id = %d",
             $recommendation_id

@@ -106,7 +106,7 @@ if (!defined('ABSPATH')) exit;
                 <div class="recommendations-list">
                     <?php foreach (array_slice($recent_recommendations, 0, 5) as $rec) : ?>
                         <div class="recommendation-item">
-                            <div class="rec-icon"><?php echo $this->get_recommendation_icon($rec->recommendation_type); ?></div>
+                            <div class="rec-icon"><?php echo ai_seo_get_recommendation_icon($rec->recommendation_type); ?></div>
                             <div class="rec-content">
                                 <strong><?php echo esc_html($rec->title); ?></strong>
                                 <small><?php echo esc_html($rec->recommendation_type); ?></small>
@@ -146,8 +146,13 @@ if (!defined('ABSPATH')) exit;
 </div>
 
 <?php
-// Helper method for icons
-function get_recommendation_icon($type) {
+/**
+ * Helper function for recommendation icons
+ *
+ * @param string $type Recommendation type
+ * @return string Icon emoji
+ */
+function ai_seo_get_recommendation_icon($type) {
     $icons = array(
         'meta_optimization' => '📝',
         'keyword_optimization' => '🔑',
@@ -156,7 +161,8 @@ function get_recommendation_icon($type) {
         'link_optimization' => '🔗',
         'technical_seo' => '⚙️',
         'search_opportunity' => '🎯',
+        'general' => '💡',
     );
-    return $icons[$type] ?? '💡';
+    return isset($icons[$type]) ? esc_html($icons[$type]) : esc_html($icons['general']);
 }
 ?>

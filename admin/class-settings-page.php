@@ -87,7 +87,7 @@ class AI_SEO_Manager_Settings_Page {
         $merged = array_merge($this->settings->get_all(), $new_settings);
         $this->settings->save($merged);
 
-        wp_redirect(add_query_arg('updated', 'true', admin_url('admin.php?page=ai-seo-manager-settings')));
+        wp_safe_redirect(add_query_arg('updated', 'true', admin_url('admin.php?page=ai-seo-manager-settings')));
         exit;
     }
 }

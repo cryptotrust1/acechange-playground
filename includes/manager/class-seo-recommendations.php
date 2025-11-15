@@ -60,12 +60,21 @@ class AI_SEO_Manager_SEO_Recommendations {
 
         // 3. Search Console dáta
         $search_data = $this->search_console->get_page_keywords($post_id, 10);
+        if (is_wp_error($search_data)) {
+            $search_data = array();
+        }
 
         // 4. Analytics dáta
         $performance_data = $this->analytics->get_page_performance($post_id);
+        if (is_wp_error($performance_data)) {
+            $performance_data = array();
+        }
 
         // 5. Search Console opportunities
         $opportunities = $this->search_console->get_opportunities($post_id);
+        if (is_wp_error($opportunities)) {
+            $opportunities = array();
+        }
 
         // Skombinuj všetky dáta
         $combined_analysis = array(

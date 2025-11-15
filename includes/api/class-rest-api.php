@@ -112,15 +112,26 @@ class AI_SEO_Manager_REST_API {
      */
     public function get_recommendations($request) {
         $db = AI_SEO_Manager_Database::get_instance();
-        $limit = $request->get_param('limit') ?? 20;
-        $status = $request->get_param('status') ?? 'pending';
+        $limit = intval($request->get_param('limit') ?? 20);
+        $status = sanitize_text_field($request->get_param('status') ?? 'pending');
+
+        // Whitelist validation for status parameter (Security fix)
+        $allowed_statuses = array('pending', 'approved', 'rejected', 'completed', 'awaiting_approval');
+        if (!in_array($status, $allowed_statuses, true)) {
+            return new WP_Error('invalid_status', 'Invalid status parameter', array('status' => 400));
+        }
+
+        // Validate limit
+        if ($limit < 1 || $limit > 100) {
+            $limit = 20;
+        }
 
         if ($status === 'pending') {
             $recommendations = $db->get_pending_recommendations($limit);
         } else {
             // Custom query for other statuses
             global $wpdb;
-            $table = $db->get_table('recommendations');
+            $table = esc_sql($db->get_table('recommendations'));
             $recommendations = $wpdb->get_results($wpdb->prepare(
                 "SELECT * FROM {$table} WHERE status = %s LIMIT %d",
                 $status,
@@ -203,15 +214,23 @@ class AI_SEO_Manager_REST_API {
      */
     public function get_settings() {
         $settings = AI_SEO_Manager_Settings::get_instance();
-
-        // Don't expose API keys in full
         $all_settings = $settings->get_all();
 
-        if (!empty($all_settings['claude_api_key'])) {
-            $all_settings['claude_api_key'] = substr($all_settings['claude_api_key'], 0, 10) . '...';
-        }
-        if (!empty($all_settings['openai_api_key'])) {
-            $all_settings['openai_api_key'] = substr($all_settings['openai_api_key'], 0, 10) . '...';
+        // Security: Remove all sensitive credentials from response
+        $sensitive_keys = array(
+            'claude_api_key',
+            'openai_api_key',
+            'ga4_api_secret',
+            'gsc_client_secret',
+            'gsc_access_token',
+            'gsc_refresh_token',
+        );
+
+        foreach ($sensitive_keys as $key) {
+            if (isset($all_settings[$key])) {
+                // Indicate if key is set without exposing value
+                $all_settings[$key] = !empty($all_settings[$key]) ? '***SET***' : '';
+            }
         }
 
         return rest_ensure_response($all_settings);

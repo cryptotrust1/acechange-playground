@@ -33,7 +33,7 @@ class AI_SEO_Manager_Content_Analyzer {
 
         $results = array(
             'score' => 0,
-            'keyword_analysis' => $this->analyze_keyword_usage($content, $title, $focus_keyword),
+            'keyword_analysis' => $this->analyze_keyword_usage($post_id, $content, $title, $focus_keyword),
             'readability' => $this->analyze_readability($content),
             'content_quality' => $this->analyze_content_quality($content),
             'ai_insights' => null,
@@ -56,7 +56,7 @@ class AI_SEO_Manager_Content_Analyzer {
     /**
      * Analýza použitia keywords
      */
-    private function analyze_keyword_usage($content, $title, $keyword) {
+    private function analyze_keyword_usage($post_id, $content, $title, $keyword) {
         if (empty($keyword)) {
             return array('score' => 0, 'message' => 'No focus keyword set');
         }
@@ -103,7 +103,7 @@ class AI_SEO_Manager_Content_Analyzer {
         }
 
         // Keyword v URL/slug
-        $post_slug = basename(get_permalink());
+        $post_slug = get_post($post_id)->post_name;
         if (stripos($post_slug, str_replace(' ', '-', $keyword_lower)) !== false) {
             $score += 25;
         } else {

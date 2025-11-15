@@ -217,7 +217,7 @@ class AI_SEO_Manager_Task_Prioritizer {
         $prompt .= "5. Expected timeline and milestones\n\n";
         $prompt .= "Return as JSON with keys: strategy, quick_wins, long_term, resources, timeline";
 
-        $response = $this->ai_manager->get_client()->chat($prompt, array(
+        $response = $this->ai_manager->chat($prompt, array(
             'system' => 'You are a senior SEO strategist with 10+ years of experience. Provide actionable, data-driven recommendations.',
         ));
 

@@ -14,6 +14,7 @@ class AI_SEO_Manager_AI_Manager {
     private $openai_client;
     private $settings;
     private $active_provider;
+    private $db;
 
     public static function get_instance() {
         if (null === self::$instance) {
@@ -29,6 +30,7 @@ class AI_SEO_Manager_AI_Manager {
         // Initialize clients
         $this->claude_client = new AI_SEO_Manager_Claude_Client();
         $this->openai_client = new AI_SEO_Manager_OpenAI_Client();
+        $this->db = AI_SEO_Manager_Database::get_instance();
     }
 
     /**
@@ -66,9 +68,28 @@ class AI_SEO_Manager_AI_Manager {
 
         // Pokus o fallback pri chybe
         if (is_wp_error($result)) {
+            $primary_error = $result->get_error_message();
             $fallback_client = $this->get_fallback_client($provider ?? $this->active_provider);
             if ($fallback_client) {
                 $result = $fallback_client->analyze_seo_content($content, $focus_keyword);
+
+                // Log ak aj fallback zlyhal
+                if (is_wp_error($result)) {
+                    $this->db->log('ai_provider_failure',
+                        'Both AI providers failed for analyze_seo_content',
+                        array(
+                            'primary_error' => $primary_error,
+                            'fallback_error' => $result->get_error_message(),
+                            'keyword' => $focus_keyword
+                        )
+                    );
+                }
+            } else {
+                // Log ak nie je dostupný fallback
+                $this->db->log('ai_provider_failure',
+                    'AI provider failed and no fallback available',
+                    array('error' => $primary_error, 'keyword' => $focus_keyword)
+                );
             }
         }
 
@@ -235,6 +256,23 @@ class AI_SEO_Manager_AI_Manager {
         }
 
         return array();
+    }
+
+    /**
+     * Public wrapper pre chat metódu s automatickým fallbackom
+     */
+    public function chat($prompt, $options = array(), $provider = null) {
+        $client = $this->get_client($provider);
+        $result = $client->chat($prompt, $options);
+
+        if (is_wp_error($result)) {
+            $fallback_client = $this->get_fallback_client($provider ?? $this->active_provider);
+            if ($fallback_client) {
+                $result = $fallback_client->chat($prompt, $options);
+            }
+        }
+
+        return $result;
     }
 
     /**

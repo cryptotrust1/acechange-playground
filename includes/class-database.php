@@ -71,7 +71,8 @@ class AI_SEO_Manager_Database {
             PRIMARY KEY (id),
             KEY post_id (post_id),
             KEY status (status),
-            KEY priority (priority)
+            KEY priority (priority),
+            KEY status_priority (status, priority)
         ) $charset_collate;";
 
         // Tabuľka pre schvaľovací workflow
@@ -84,7 +85,8 @@ class AI_SEO_Manager_Database {
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
             KEY recommendation_id (recommendation_id),
-            KEY user_id (user_id)
+            KEY user_id (user_id),
+            KEY created_at (created_at)
         ) $charset_collate;";
 
         // Tabuľka pre logy

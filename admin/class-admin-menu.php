@@ -101,6 +101,10 @@ class AI_SEO_Manager_Admin_Menu {
      * Render approvals page
      */
     public function render_approvals_page() {
+        if (!current_user_can('edit_posts')) {
+            wp_die(__('Permission denied', 'ai-seo-manager'));
+        }
+
         $workflow = AI_SEO_Manager_Approval_Workflow::get_instance();
         $pending = $workflow->get_pending_approvals(50);
 
@@ -111,6 +115,10 @@ class AI_SEO_Manager_Admin_Menu {
      * Render recommendations page
      */
     public function render_recommendations_page() {
+        if (!current_user_can('edit_posts')) {
+            wp_die(__('Permission denied', 'ai-seo-manager'));
+        }
+
         $db = AI_SEO_Manager_Database::get_instance();
         $recommendations = $db->get_pending_recommendations(100);
 
@@ -121,6 +129,10 @@ class AI_SEO_Manager_Admin_Menu {
      * Render autopilot page
      */
     public function render_autopilot_page() {
+        if (!current_user_can('manage_options')) {
+            wp_die(__('Permission denied', 'ai-seo-manager'));
+        }
+
         $autopilot = AI_SEO_Manager_Autopilot_Engine::get_instance();
         $stats = $autopilot->get_stats();
 
@@ -131,6 +143,10 @@ class AI_SEO_Manager_Admin_Menu {
      * Render settings page
      */
     public function render_settings_page() {
+        if (!current_user_can('manage_options')) {
+            wp_die(__('Permission denied', 'ai-seo-manager'));
+        }
+
         require_once AI_SEO_MANAGER_PLUGIN_DIR . 'admin/class-settings-page.php';
         $settings_page = AI_SEO_Manager_Settings_Page::get_instance();
         $settings_page->render();
