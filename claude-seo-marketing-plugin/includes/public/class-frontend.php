@@ -12,6 +12,55 @@
 class Claude_SEO_Frontend {
 
     /**
+     * Constructor.
+     */
+    public function __construct() {
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_cwv_monitoring'));
+    }
+
+    /**
+     * Enqueue Core Web Vitals monitoring script.
+     */
+    public function enqueue_cwv_monitoring() {
+        $settings = get_option('claude_seo_settings', array());
+
+        // Only enqueue if CWV monitoring is enabled
+        if (empty($settings['cwv_monitoring_enabled'])) {
+            return;
+        }
+
+        // Enqueue web-vitals library from CDN
+        wp_enqueue_script(
+            'web-vitals',
+            'https://unpkg.com/web-vitals@3/dist/web-vitals.iife.js',
+            array(),
+            '3.0.0',
+            true
+        );
+
+        // Enqueue our monitoring script
+        wp_enqueue_script(
+            'claude-seo-cwv-monitor',
+            CLAUDE_SEO_PLUGIN_URL . 'public/js/cwv-monitor.js',
+            array('web-vitals'),
+            CLAUDE_SEO_VERSION,
+            true
+        );
+
+        // Pass configuration to JavaScript
+        wp_localize_script(
+            'claude-seo-cwv-monitor',
+            'claudeSeoConfig',
+            array(
+                'endpoint' => rest_url('claude-seo/v1/cwv'),
+                'pageId' => get_queried_object_id(),
+                'siteId' => get_current_blog_id(),
+                'cwvMonitoring' => true
+            )
+        );
+    }
+
+    /**
      * Output meta tags.
      */
     public function output_meta_tags() {

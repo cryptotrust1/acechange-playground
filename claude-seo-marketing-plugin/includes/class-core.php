@@ -70,6 +70,9 @@ class Claude_SEO_Core {
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/claude/class-prompt-templates.php';
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/claude/class-cost-tracker.php';
 
+        // AI classes
+        require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/ai/class-quality-scorer.php';
+
         // SEO classes
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/seo/class-analyzer.php';
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/seo/class-readability.php';
@@ -79,6 +82,13 @@ class Claude_SEO_Core {
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/seo/class-robots-txt.php';
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/seo/class-internal-linking.php';
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/seo/class-404-monitor.php';
+
+        // Analytics classes
+        require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/analytics/class-opportunity-detector.php';
+        require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/analytics/class-ai-overview-optimizer.php';
+
+        // Monitoring classes
+        require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/monitoring/class-cwv-processor.php';
 
         // Admin classes
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/admin/class-admin-page.php';
@@ -95,6 +105,7 @@ class Claude_SEO_Core {
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/api/class-rest-controller.php';
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/api/class-analysis-endpoint.php';
         require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/api/class-claude-endpoint.php';
+        require_once CLAUDE_SEO_PLUGIN_DIR . 'includes/api/class-cwv-endpoint.php';
 
         $this->loader = new Claude_SEO_Loader();
     }
@@ -178,9 +189,11 @@ class Claude_SEO_Core {
     private function define_api_hooks() {
         $analysis_endpoint = new Claude_SEO_Analysis_Endpoint();
         $claude_endpoint = new Claude_SEO_Claude_Endpoint();
+        $cwv_endpoint = new Claude_SEO_CWV_Endpoint();
 
         $this->loader->add_action('rest_api_init', $analysis_endpoint, 'register_routes');
         $this->loader->add_action('rest_api_init', $claude_endpoint, 'register_routes');
+        $this->loader->add_action('rest_api_init', $cwv_endpoint, 'register_routes');
     }
 
     /**
