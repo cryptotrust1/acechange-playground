@@ -113,6 +113,28 @@ class AI_SEO_Manager {
 
         // API Endpoints
         require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/api/class-rest-api.php';
+
+        // Social Media Manager
+        if (get_option('ai_seo_social_enabled', true)) {
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-social-database.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-platform-registry.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-rate-limiter.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-social-media-manager.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-ai-content-generator.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-scheduler.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-analytics.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-admin-menu.php';
+
+            // Platform Clients
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-platform-client.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-telegram-client.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-facebook-client.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-instagram-client.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-twitter-client.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-linkedin-client.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-youtube-client.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-tiktok-client.php';
+        }
     }
 
     /**
@@ -140,6 +162,15 @@ class AI_SEO_Manager {
         AI_SEO_Manager_REST_API::get_instance();
         AI_SEO_Manager_Autopilot_Engine::get_instance();
 
+        // Social Media Manager komponenty
+        if (get_option('ai_seo_social_enabled', true)) {
+            AI_SEO_Social_Database::get_instance();
+            AI_SEO_Social_Media_Manager::get_instance();
+            AI_SEO_Social_Scheduler::get_instance();
+            AI_SEO_Social_Analytics::get_instance();
+            AI_SEO_Social_Admin_Menu::get_instance();
+        }
+
         // Načítanie prekladov
         load_plugin_textdomain('ai-seo-manager', false, dirname(plugin_basename(__FILE__)) . '/languages');
 
@@ -153,6 +184,12 @@ class AI_SEO_Manager {
     public function activate() {
         AI_SEO_Manager_Database::get_instance()->create_tables();
         AI_SEO_Manager_Settings::get_instance()->set_default_settings();
+
+        // Social Media Manager tabuľky
+        if (get_option('ai_seo_social_enabled', true)) {
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-social-database.php';
+            AI_SEO_Social_Database::get_instance()->create_tables();
+        }
 
         // Naplánuj cron joby
         if (!wp_next_scheduled('ai_seo_manager_daily_analysis')) {
