@@ -555,4 +555,17 @@ class AI_SEO_Social_Database {
 
         return $stats;
     }
+
+    /**
+     * Check if all required tables exist
+     */
+    public function check_tables_exist() {
+        foreach ($this->tables as $table_name) {
+            $exists = $this->wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") === $table_name;
+            if (!$exists) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

@@ -440,4 +440,121 @@ class AI_SEO_Manager_Debug_Logger {
 
         return $stats;
     }
+
+    /**
+     * Get recent logs
+     */
+    public function get_recent_logs($limit = 50) {
+        global $wpdb;
+        $table = $this->db->get_table_name('logs');
+
+        $logs = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$table}
+             WHERE log_type LIKE 'debug_%'
+             ORDER BY created_at DESC
+             LIMIT %d",
+            $limit
+        ));
+
+        return $this->format_logs_for_display($logs);
+    }
+
+    /**
+     * Get error logs
+     */
+    public function get_errors($limit = 50) {
+        global $wpdb;
+        $table = $this->db->get_table_name('logs');
+
+        $logs = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$table}
+             WHERE log_type = 'debug_error'
+             ORDER BY created_at DESC
+             LIMIT %d",
+            $limit
+        ));
+
+        return $this->format_logs_for_display($logs);
+    }
+
+    /**
+     * Get warning logs
+     */
+    public function get_warnings($limit = 50) {
+        global $wpdb;
+        $table = $this->db->get_table_name('logs');
+
+        $logs = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$table}
+             WHERE log_type = 'debug_warning'
+             ORDER BY created_at DESC
+             LIMIT %d",
+            $limit
+        ));
+
+        return $this->format_logs_for_display($logs);
+    }
+
+    /**
+     * Format logs for display
+     */
+    private function format_logs_for_display($logs) {
+        if (empty($logs)) {
+            return array();
+        }
+
+        $formatted = array();
+        foreach ($logs as $log) {
+            // Parse log data
+            $log_data = maybe_unserialize($log->log_data);
+
+            $formatted[] = (object) array(
+                'id' => $log->id,
+                'level' => strtoupper(str_replace('debug_', '', $log->log_type)),
+                'message' => $log->message,
+                'context' => isset($log_data['context']) ? json_encode($log_data['context']) : '',
+                'created_at' => $log->created_at,
+                'user_id' => $log_data['user_id'] ?? 0,
+                'url' => $log_data['url'] ?? '',
+                'ip' => $log_data['ip'] ?? '',
+            );
+        }
+
+        return $formatted;
+    }
+
+    /**
+     * Clear all logs
+     */
+    public function clear_all_logs() {
+        global $wpdb;
+        $table = $this->db->get_table_name('logs');
+
+        $wpdb->query("DELETE FROM {$table} WHERE log_type LIKE 'debug_%'");
+
+        $this->info('Debug logs cleared');
+
+        return true;
+    }
+
+    /**
+     * Delete old logs
+     */
+    public function cleanup_old_logs($days = 7) {
+        global $wpdb;
+        $table = $this->db->get_table_name('logs');
+
+        $cutoff_date = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+
+        $deleted = $wpdb->query($wpdb->prepare(
+            "DELETE FROM {$table}
+             WHERE log_type LIKE 'debug_%'
+             AND created_at < %s",
+            $cutoff_date
+        ));
+
+        $this->info("Cleaned up old logs", array('deleted' => $deleted, 'days' => $days));
+
+        return $deleted;
+    }
 }

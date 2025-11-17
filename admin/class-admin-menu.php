@@ -86,6 +86,16 @@ class AI_SEO_Manager_Admin_Menu {
             'ai-seo-manager-settings',
             array($this, 'render_settings_page')
         );
+
+        // Debug Dashboard (only for admins)
+        add_submenu_page(
+            'ai-seo-manager',
+            __('🔧 Debug Dashboard', 'ai-seo-manager'),
+            __('🔧 Debug Dashboard', 'ai-seo-manager'),
+            'manage_options',
+            'ai-seo-manager-debug',
+            array($this, 'render_debug_page')
+        );
     }
 
     /**
@@ -150,5 +160,20 @@ class AI_SEO_Manager_Admin_Menu {
         require_once AI_SEO_MANAGER_PLUGIN_DIR . 'admin/class-settings-page.php';
         $settings_page = AI_SEO_Manager_Settings_Page::get_instance();
         $settings_page->render();
+    }
+
+    /**
+     * Render debug dashboard page
+     */
+    public function render_debug_page() {
+        if (!current_user_can('manage_options')) {
+            wp_die(__('Permission denied', 'ai-seo-manager'));
+        }
+
+        // Load debug AJAX handler
+        require_once AI_SEO_MANAGER_PLUGIN_DIR . 'admin/class-debug-ajax-handler.php';
+
+        // Render debug dashboard
+        include AI_SEO_MANAGER_PLUGIN_DIR . 'admin/views/debug-real-time.php';
     }
 }
