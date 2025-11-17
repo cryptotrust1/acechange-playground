@@ -13,11 +13,19 @@ class AI_SEO_Manager_Claude_Client {
     private $model;
     private $api_url = 'https://api.anthropic.com/v1/messages';
     private $api_version = '2023-06-01';
+    private $logger;
+    private $performance;
 
     public function __construct() {
         $settings = AI_SEO_Manager_Settings::get_instance();
         $this->api_key = $settings->get('claude_api_key');
         $this->model = $settings->get('claude_model', 'claude-3-5-sonnet-20241022');
+
+        // Initialize debug tools if available
+        if (class_exists('AI_SEO_Manager_Debug_Logger')) {
+            $this->logger = AI_SEO_Manager_Debug_Logger::get_instance();
+            $this->performance = AI_SEO_Manager_Performance_Monitor::get_instance();
+        }
     }
 
     /**
@@ -25,7 +33,20 @@ class AI_SEO_Manager_Claude_Client {
      */
     public function chat($messages, $args = array()) {
         if (empty($this->api_key)) {
+            if ($this->logger) {
+                $this->logger->error('Claude API key not configured');
+            }
             return new WP_Error('no_api_key', __('Claude API key is not configured', 'ai-seo-manager'));
+        }
+
+        // Start performance tracking
+        $start_time = microtime(true);
+
+        if ($this->logger) {
+            $this->logger->debug('Claude API call initiated', array(
+                'model' => $this->model,
+                'message_count' => is_array($messages) ? count($messages) : 1,
+            ));
         }
 
         $defaults = array(
@@ -60,7 +81,21 @@ class AI_SEO_Manager_Claude_Client {
             'timeout' => 60,
         ));
 
+        $duration = microtime(true) - $start_time;
+
         if (is_wp_error($response)) {
+            if ($this->logger) {
+                $this->logger->error('Claude API request failed', array(
+                    'error' => $response->get_error_message(),
+                    'duration' => round($duration, 4) . 's',
+                ));
+            }
+
+            // Track API call failure
+            if ($this->performance) {
+                $this->performance->track_api_call('claude', 'chat', $duration, false, $response->get_error_message());
+            }
+
             return $response;
         }
 
@@ -68,11 +103,36 @@ class AI_SEO_Manager_Claude_Client {
         $body = json_decode(wp_remote_retrieve_body($response), true);
 
         if ($code !== 200) {
-            return new WP_Error(
-                'api_error',
-                isset($body['error']['message']) ? $body['error']['message'] : 'Unknown API error',
-                $body
-            );
+            $error_msg = isset($body['error']['message']) ? $body['error']['message'] : 'Unknown API error';
+
+            if ($this->logger) {
+                $this->logger->error('Claude API returned error', array(
+                    'code' => $code,
+                    'error' => $error_msg,
+                    'duration' => round($duration, 4) . 's',
+                ));
+            }
+
+            // Track API call failure
+            if ($this->performance) {
+                $this->performance->track_api_call('claude', 'chat', $duration, false, $error_msg);
+            }
+
+            return new WP_Error('api_error', $error_msg, $body);
+        }
+
+        if ($this->logger) {
+            $usage = $body['usage'] ?? array();
+            $this->logger->info('Claude API call successful', array(
+                'duration' => round($duration, 4) . 's',
+                'input_tokens' => $usage['input_tokens'] ?? 0,
+                'output_tokens' => $usage['output_tokens'] ?? 0,
+            ));
+        }
+
+        // Track successful API call
+        if ($this->performance) {
+            $this->performance->track_api_call('claude', 'chat', $duration, true);
         }
 
         return $this->parse_response($body);

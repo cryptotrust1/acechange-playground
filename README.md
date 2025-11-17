@@ -266,6 +266,40 @@ GPL v2 or later
 
 AceChange - https://acechange.com
 
+## 🐛 Debug a Monitoring
+
+Plugin obsahuje komplexný debug systém pre vývoj a troubleshooting:
+
+### Zapnutie Debug Módu
+
+Pridajte do `wp-config.php`:
+```php
+define('AI_SEO_DEBUG', true);
+define('AI_SEO_DEBUG_LEVEL', 'DEBUG'); // ERROR, WARNING, INFO, DEBUG
+define('WP_DEBUG', true);
+define('WP_DEBUG_LOG', true);
+```
+
+### Funkcie Debug Systému
+
+- **Multi-level Logging**: ERROR, WARNING, INFO, DEBUG
+- **Performance Monitoring**: Tracking času, pamäte, DB queries
+- **API Call Tracking**: Success rate, duration, errors
+- **Admin Debug Panel**: `AI SEO Manager > Debug Logs`
+- **Auto-rotation**: Automatická rotácia log súborov
+- **CSV Export**: Export logov pre analýzu
+
+### Admin Debug Panel
+
+Po zapnutí debug módu sa zobrazí nové menu **Debug Logs** kde môžete:
+- Prezerať všetky logy s filtrami
+- Exportovať logy do CSV
+- Sledovať API performance metriky
+- Monitorovať memory usage
+- Čistiť staré logy
+
+**Detailná dokumentácia:** Pozri [DEBUG.md](DEBUG.md)
+
 ## 🎉 Changelog
 
 ### v1.0.0 (2025-01-15)
@@ -277,6 +311,10 @@ AceChange - https://acechange.com
 - ✅ Auto-pilot s approval workflow
 - ✅ Admin dashboard a UI
 - ✅ REST API
+- ✅ Komplexný debug a monitoring systém
+- ✅ Performance tracking
+- ✅ Multi-level logging
+- ✅ Admin debug panel
 
 ---
 

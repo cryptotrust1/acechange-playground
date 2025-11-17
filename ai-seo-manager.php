@@ -28,6 +28,12 @@ define('AI_SEO_MANAGER_PLUGIN_FILE', __FILE__);
 // Autoloader
 require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/class-autoloader.php';
 
+// Debug System (načíta sa pred všetkým ostatným)
+if (defined('WP_DEBUG') && WP_DEBUG || defined('AI_SEO_DEBUG') && AI_SEO_DEBUG) {
+    require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/class-debug-logger.php';
+    require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/class-performance-monitor.php';
+}
+
 /**
  * Hlavná trieda pluginu
  */
@@ -100,6 +106,11 @@ class AI_SEO_Manager {
         require_once AI_SEO_MANAGER_PLUGIN_DIR . 'admin/class-dashboard.php';
         require_once AI_SEO_MANAGER_PLUGIN_DIR . 'admin/class-settings-page.php';
 
+        // Debug Panel
+        if (defined('WP_DEBUG') && WP_DEBUG || defined('AI_SEO_DEBUG') && AI_SEO_DEBUG) {
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'admin/class-debug-panel.php';
+        }
+
         // API Endpoints
         require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/api/class-rest-api.php';
     }
@@ -108,6 +119,19 @@ class AI_SEO_Manager {
      * Inicializácia pluginu
      */
     public function init() {
+        // Inicializácia debug systému
+        if (defined('WP_DEBUG') && WP_DEBUG || defined('AI_SEO_DEBUG') && AI_SEO_DEBUG) {
+            AI_SEO_Manager_Debug_Logger::get_instance();
+            AI_SEO_Manager_Performance_Monitor::get_instance();
+            AI_SEO_Manager_Debug_Panel::get_instance();
+
+            // Log plugin initialization
+            AI_SEO_Manager_Debug_Logger::get_instance()->info('AI SEO Manager plugin initialized', array(
+                'version' => AI_SEO_MANAGER_VERSION,
+                'debug_mode' => defined('AI_SEO_DEBUG') && AI_SEO_DEBUG,
+            ));
+        }
+
         // Inicializácia komponentov
         AI_SEO_Manager_Database::get_instance();
         AI_SEO_Manager_Settings::get_instance();
