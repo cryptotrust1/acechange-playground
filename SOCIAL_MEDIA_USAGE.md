@@ -1,166 +1,330 @@
 # AI Social Media Manager - Návod na Použitie
 
-**Verzia:** 1.0.0 (Phase 2)
-**Status:** ✅ Core + Telegram HOTOVÉ
+**Verzia:** 2.0.0 (Phase 3)
+**Status:** ✅ ALL PLATFORMS COMPLETE (7/7)
 
 ---
 
-## 🚀 Rýchly Štart - Telegram
+## 📋 Podporované Platformy
 
-### Krok 1: Vytvorte Telegram Bot
+✅ **Telegram** - Bot API (FREE, najprostejšia)
+✅ **Facebook** - Graph API v22.0 (Business Pages)
+✅ **Instagram** - Graph API (Business accounts)
+✅ **Twitter/X** - API v2 (OAuth 2.0)
+✅ **LinkedIn** - Posts API (OAuth 2.0)
+✅ **YouTube** - Data API v3 (Google OAuth)
+✅ **TikTok** - Content Posting API (requires audit)
 
-1. Otvorte Telegram a nájdite **@BotFather**
-2. Pošlite príkaz: `/newbot`
-3. Zadajte názov bota (napr. "My SEO Bot")
-4. Zadajte username bota (musí končiť na "bot", napr. "myseobot")
-5. **Uložte Bot Token** - vyzerá takto: `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`
+---
 
-### Krok 2: Vytvorte Telegram Channel
+## 🚀 Quick Start Guide
 
-1. V Telegrame vytvorte nový Channel
-2. Nastavte ho ako Public alebo Private
-3. Ak je Public, username je `@vaschannel`
-4. Ak je Private, ID získate tak, že:
-   - Pridajte bota ako admina do channelu
-   - Pošlite správu do channelu
-   - Použite https://api.telegram.org/bot{BOT_TOKEN}/getUpdates
-   - Nájdite `chat_id` - použite to ako Channel ID
+### 1. Telegram (Naj jednoduchšie)
 
-### Krok 3: Pridajte Bot ako Admin
+**Krok 1: Vytvorte Bot**
+1. Telegram → @BotFather
+2. `/newbot`
+3. Uložte Bot Token
 
-1. Otvorte Channel Settings
-2. Administrators → Add Administrator
-3. Nájdite vášho bota a pridajte ho
-4. Povoľte "Post messages" permission
+**Krok 2: Vytvorte Channel & Pridajte Bota**
+1. Vytvorte Channel
+2. Pridajte bota ako admin
+3. Povoľte "Post messages"
 
-### Krok 4: Konfigurácia v WordPress
-
+**Konfigurácia:**
 ```php
-// V WordPress admin alebo priamo v databáze
-
-// Vytvorte account record
 global $wpdb;
-$table = $wpdb->prefix . 'ai_seo_social_accounts';
-
-$wpdb->insert($table, array(
+$wpdb->insert($wpdb->prefix . 'ai_seo_social_accounts', array(
     'platform' => 'telegram',
-    'account_name' => 'My Telegram Channel',
-    'account_id' => '@vaschannel', // alebo -100123456789 pre private
+    'account_name' => 'My Channel',
+    'account_id' => '@mychannel',
     'credentials' => serialize(array(
-        'bot_token' => '123456789:ABCdefGHIjklMNOpqrsTUVwxyz',
-        'channel_id' => '@vaschannel', // alebo -100123456789
+        'bot_token' => 'YOUR_BOT_TOKEN',
+        'channel_id' => '@mychannel',
     )),
     'status' => 'active',
 ));
 ```
 
-### Krok 5: Test Publishing
+---
 
+### 2. Facebook
+
+**Požiadavky:**
+- Facebook App (developers.facebook.com)
+- Facebook Business Page
+- Page Access Token
+
+**Konfigurácia:**
 ```php
-// Získaj Social Media Manager
-$manager = AI_SEO_Social_Media_Manager::get_instance();
+$wpdb->insert($wpdb->prefix . 'ai_seo_social_accounts', array(
+    'platform' => 'facebook',
+    'account_name' => 'My FB Page',
+    'account_id' => 'PAGE_ID',
+    'credentials' => serialize(array(
+        'app_id' => 'YOUR_APP_ID',
+        'app_secret' => 'YOUR_APP_SECRET',
+        'page_id' => 'YOUR_PAGE_ID',
+        'page_access_token' => 'PAGE_ACCESS_TOKEN',
+    )),
+    'status' => 'active',
+));
+```
 
-// Publikuj jednoduchú správu
-$result = $manager->publish_now(
-    '🚀 Hello from AI SEO Manager!
+**OAuth Flow:**
+1. Create App → developers.facebook.com
+2. Add "Facebook Login" product
+3. Get Page Access Token via Graph API Explorer
+4. Store token in credentials
 
-This is a test post from WordPress.
+---
 
-#WordPress #AI #SEO',
-    array('telegram'),
-    array(
-        'created_by' => 'manual_test',
-    )
-);
+### 3. Instagram
 
-// Check result
-if (is_wp_error($result['telegram'])) {
-    echo 'Error: ' . $result['telegram']->get_error_message();
-} else {
-    echo 'Success! Message ID: ' . $result['telegram']['platform_post_id'];
-}
+**Požiadavky:**
+- Instagram Business/Creator account
+- Connected to Facebook Page
+- Access Token
+
+**Konfigurácia:**
+```php
+$wpdb->insert($wpdb->prefix . 'ai_seo_social_accounts', array(
+    'platform' => 'instagram',
+    'account_name' => 'My IG Account',
+    'account_id' => 'INSTAGRAM_ACCOUNT_ID',
+    'credentials' => serialize(array(
+        'app_id' => 'FB_APP_ID',
+        'app_secret' => 'FB_APP_SECRET',
+        'instagram_account_id' => 'IG_ACCOUNT_ID',
+        'access_token' => 'ACCESS_TOKEN',
+    )),
+    'status' => 'active',
+));
+```
+
+**DÔLEŽITÉ:** Instagram VYŽADUJE media (fotky alebo video) - text-only posty NIE SÚ podporované!
+
+---
+
+### 4. Twitter/X
+
+**Požiadavky:**
+- Twitter Developer Account
+- App with OAuth 2.0
+- Access Token + Refresh Token
+
+**Konfigurácia:**
+```php
+$wpdb->insert($wpdb->prefix . 'ai_seo_social_accounts', array(
+    'platform' => 'twitter',
+    'account_name' => 'My Twitter',
+    'account_id' => '@myusername',
+    'credentials' => serialize(array(
+        'api_key' => 'API_KEY',
+        'api_secret' => 'API_SECRET',
+        'access_token' => 'ACCESS_TOKEN',
+        'refresh_token' => 'REFRESH_TOKEN',
+    )),
+    'status' => 'active',
+));
+```
+
+**OAuth 2.0 Flow:**
+1. Create App → developer.twitter.com
+2. Enable OAuth 2.0 with PKCE
+3. Get tokens via OAuth flow
+4. Store tokens
+
+---
+
+### 5. LinkedIn
+
+**Požiadavky:**
+- LinkedIn App
+- OAuth 2.0 tokens
+- Permissions: w_member_social
+
+**Konfigurácia:**
+```php
+$wpdb->insert($wpdb->prefix . 'ai_seo_social_accounts', array(
+    'platform' => 'linkedin',
+    'account_name' => 'My LinkedIn',
+    'account_id' => 'person_urn',
+    'credentials' => serialize(array(
+        'client_id' => 'CLIENT_ID',
+        'client_secret' => 'CLIENT_SECRET',
+        'access_token' => 'ACCESS_TOKEN',
+        'refresh_token' => 'REFRESH_TOKEN',
+        'person_urn' => 'urn:li:person:XXXXX',
+    )),
+    'status' => 'active',
+));
 ```
 
 ---
 
-## 📝 API Použitie
+### 6. YouTube
+
+**Požiadavky:**
+- Google Cloud Project
+- YouTube Data API v3 enabled
+- OAuth 2.0 credentials
+
+**Konfigurácia:**
+```php
+$wpdb->insert($wpdb->prefix . 'ai_seo_social_accounts', array(
+    'platform' => 'youtube',
+    'account_name' => 'My YT Channel',
+    'account_id' => 'CHANNEL_ID',
+    'credentials' => serialize(array(
+        'client_id' => 'GOOGLE_CLIENT_ID',
+        'client_secret' => 'GOOGLE_CLIENT_SECRET',
+        'access_token' => 'ACCESS_TOKEN',
+        'refresh_token' => 'REFRESH_TOKEN',
+        'channel_id' => 'CHANNEL_ID',
+    )),
+    'status' => 'active',
+));
+```
+
+**DÔLEŽITÉ:** YouTube VYŽADUJE video - text/image posty NIE SÚ podporované!
+
+---
+
+### 7. TikTok
+
+**Požiadavky:**
+- TikTok Developer Account
+- App (MUST be approved/audited)
+- OAuth 2.0 tokens
+
+**Konfigurácia:**
+```php
+$wpdb->insert($wpdb->prefix . 'ai_seo_social_accounts', array(
+    'platform' => 'tiktok',
+    'account_name' => 'My TikTok',
+    'account_id' => 'open_id',
+    'credentials' => serialize(array(
+        'client_key' => 'CLIENT_KEY',
+        'client_secret' => 'CLIENT_SECRET',
+        'access_token' => 'ACCESS_TOKEN',
+        'refresh_token' => 'REFRESH_TOKEN',
+        'open_id' => 'USER_OPEN_ID',
+    )),
+    'status' => 'active',
+));
+```
+
+**DÔLEŽITÉ:**
+- TikTok VYŽADUJE video
+- App MUSÍ byť auditovaný TikTokom pred použitím Content Posting API
+
+---
+
+## 📝 API Usage Examples
 
 ### Základné Publikovanie
 
 ```php
 $manager = AI_SEO_Social_Media_Manager::get_instance();
 
-// Text only
+// Text only (funguje: Telegram, Facebook, Twitter, LinkedIn)
 $result = $manager->publish_now(
-    'Your message here',
-    array('telegram')
+    'Your message here #hashtag',
+    array('telegram', 'facebook', 'twitter')
 );
 
-// Text + Image
+// Text + Image (funguje: všetky okrem YouTube, TikTok)
 $result = $manager->publish_now(
     'Check out this image!',
-    array('telegram'),
+    array('telegram', 'facebook', 'instagram', 'twitter', 'linkedin'),
     array(
         'media' => array('https://example.com/image.jpg'),
     )
 );
 
-// Text + Video
+// Video post (funguje: všetky platformy)
 $result = $manager->publish_now(
     'Watch this video!',
-    array('telegram'),
+    array('telegram', 'facebook', 'instagram', 'twitter', 'youtube', 'tiktok'),
     array(
         'media' => array('https://example.com/video.mp4'),
     )
 );
 ```
 
-### Scheduling
+### Multi-Platform Publishing
 
 ```php
-$manager = AI_SEO_Social_Media_Manager::get_instance();
-
-// Schedule for tomorrow at 9 AM
-$schedule_time = date('Y-m-d 09:00:00', strtotime('+1 day'));
-
-$result = $manager->schedule_post(
-    'Scheduled post content',
-    $schedule_time,
-    array('telegram'),
+// Publikuj na všetky platformy naraz
+$result = $manager->publish_now(
+    'Universal message with image',
+    array('telegram', 'facebook', 'instagram', 'twitter', 'linkedin'),
     array(
+        'media' => array('https://example.com/image.jpg'),
         'tone' => 'professional',
         'category' => 'tech',
     )
 );
+
+// Check results
+foreach ($result as $platform => $status) {
+    if (is_wp_error($status)) {
+        echo "{$platform}: ERROR - " . $status->get_error_message() . "\n";
+    } else {
+        echo "{$platform}: SUCCESS - Post ID: {$status['platform_post_id']}\n";
+    }
+}
 ```
 
-### Telegram-Specific Features
+### Scheduling Posts
 
 ```php
-// Get Telegram client directly
-$telegram = $manager->get_platform_client('telegram');
+$schedule_time = date('Y-m-d 09:00:00', strtotime('+1 day'));
 
-// Send poll
+$result = $manager->schedule_post(
+    'Scheduled content',
+    $schedule_time,
+    array('telegram', 'facebook', 'twitter'),
+    array(
+        'media' => array('https://example.com/image.jpg'),
+    )
+);
+```
+
+### Platform-Specific Features
+
+```php
+// Telegram: Send poll
+$telegram = $manager->get_platform_client('telegram');
 $poll_result = $telegram->send_poll(
-    'What do you think about AI?',
-    array('Amazing!', 'Good', 'Okay', 'Not sure')
+    'What do you think?',
+    array('Option 1', 'Option 2', 'Option 3')
 );
 
-// Pin message
-$telegram->pin_message($message_id);
+// Facebook: Publish album
+$facebook = $manager->get_platform_client('facebook');
+// (albums are automatically created when publishing with multiple images)
 
-// Delete message
-$telegram->delete_message($message_id);
-
-// Get channel info
-$channel_info = $telegram->get_channel_info();
+// Instagram: Carousel
+$manager->publish_now(
+    'Carousel post',
+    array('instagram'),
+    array(
+        'media' => array(
+            'https://example.com/img1.jpg',
+            'https://example.com/img2.jpg',
+            'https://example.com/img3.jpg',
+        ),
+    )
+);
 ```
 
 ---
 
 ## 🔧 Aktivácia v Plugine
 
-Pridajte do `ai-seo-manager.php`:
+V `ai-seo-manager.php`:
 
 ```php
 // Social Media Manager
@@ -176,6 +340,12 @@ if (get_option('ai_seo_social_enabled', true)) {
     // Load platform clients
     require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-platform-client.php';
     require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-telegram-client.php';
+    require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-facebook-client.php';
+    require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-instagram-client.php';
+    require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-twitter-client.php';
+    require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-linkedin-client.php';
+    require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-youtube-client.php';
+    require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-tiktok-client.php';
 
     // Initialize
     add_action('plugins_loaded', function() {
@@ -184,11 +354,10 @@ if (get_option('ai_seo_social_enabled', true)) {
 }
 ```
 
-### Aktivačný Hook (vytvorenie tabuliek)
+### Activation Hook
 
 ```php
 register_activation_hook(__FILE__, function() {
-    // Create social media tables
     require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-social-database.php';
     AI_SEO_Social_Database::get_instance()->create_tables();
 });
@@ -198,20 +367,21 @@ register_activation_hook(__FILE__, function() {
 
 ## 🔄 Automatické Zdieľanie Blogov
 
-Povoľte auto-sharing v options:
-
 ```php
 update_option('ai_seo_social_auto_share_enabled', true);
-update_option('ai_seo_social_auto_share_platforms', array('telegram'));
+update_option('ai_seo_social_auto_share_platforms', array(
+    'telegram',
+    'facebook',
+    'twitter',
+    'linkedin'
+));
 ```
 
-Teraz sa každý nový blog automaticky zdieľa na Telegram!
+Teraz sa každý nový blog automaticky zdieľa!
 
 ---
 
-## ⏰ Cron Job pre Scheduled Posts
-
-Pridajte do `wp-config.php` alebo plugin activation:
+## ⏰ Cron Job Setup
 
 ```php
 // Register cron schedule
@@ -219,7 +389,7 @@ if (!wp_next_scheduled('ai_seo_social_process_queue')) {
     wp_schedule_event(time(), 'every_5_minutes', 'ai_seo_social_process_queue');
 }
 
-// Add custom cron schedule
+// Add custom schedule
 add_filter('cron_schedules', function($schedules) {
     $schedules['every_5_minutes'] = array(
         'interval' => 300,
@@ -231,205 +401,232 @@ add_filter('cron_schedules', function($schedules) {
 
 ---
 
-## 📊 Rate Limits
+## 📊 Platform Comparison
 
-Telegram má veľkorysé limity:
+| Platform  | Text Only | Images | Videos | Carousel | Analytics | Free API |
+|-----------|-----------|--------|--------|----------|-----------|----------|
+| Telegram  | ✅        | ✅     | ✅     | ✅       | ❌        | ✅       |
+| Facebook  | ✅        | ✅     | ✅     | ✅       | ✅        | ✅       |
+| Instagram | ❌        | ✅     | ✅     | ✅       | ✅        | ✅       |
+| Twitter/X | ✅        | ✅     | ✅     | ❌       | ✅        | ⚠️       |
+| LinkedIn  | ✅        | ✅     | ✅     | ❌       | ⚠️        | ✅       |
+| YouTube   | ❌        | ❌     | ✅     | ❌       | ✅        | ✅       |
+| TikTok    | ❌        | ❌     | ✅     | ❌       | ⚠️        | ⚠️       |
 
-```
-- 30 messages per second
-- ~2500 messages per day per chat
-- No strict hourly/daily limits
-```
+**Legend:**
+- ✅ Fully supported
+- ⚠️ Limited/requires additional access
+- ❌ Not supported
 
-Náš Rate Limiter je nastavený konzervatívne:
+---
 
-```php
-'minute' => 30,
-'hour' => 1000,
-'day' => 10000,
-```
+## 📈 Rate Limits
 
-Môžete upraviť:
-
-```php
-$rate_limiter = AI_SEO_Social_Rate_Limiter::get_instance();
-$rate_limiter->set_platform_limits('telegram', array(
-    'minute' => 50,
-    'hour' => 2000,
-    'day' => 20000,
-));
-```
+| Platform  | Per Minute | Per Hour | Per Day  |
+|-----------|------------|----------|----------|
+| Telegram  | 30         | 1,000    | 10,000   |
+| Facebook  | 10         | 200      | 2,000    |
+| Instagram | 5          | 25       | 25       |
+| Twitter/X | 3          | 50       | 300      |
+| LinkedIn  | 5          | 100      | 500      |
+| YouTube   | 1          | 10       | 50       |
+| TikTok    | 1          | 5        | 20       |
 
 ---
 
 ## 🐛 Debugging
-
-Zapnite debug v `wp-config.php`:
 
 ```php
 define('AI_SEO_DEBUG', true);
 define('AI_SEO_DEBUG_LEVEL', 'DEBUG');
 ```
 
-Všetky Telegram API volania sa budú logovať:
-- **AI SEO Manager > Debug Logs**
-- `wp-content/uploads/ai-seo-manager/logs/debug-YYYY-MM-DD.log`
+Logs: `wp-content/uploads/ai-seo-manager/logs/`
 
 ---
 
-## ✅ Kontrolný Zoznam
+## ✅ Platform Setup Checklist
 
-Pred použitím overte:
+### Telegram ✅
+- [x] Create bot via @BotFather
+- [x] Create channel
+- [x] Add bot as admin
+- [x] Store bot token & channel ID
 
-- [x] Telegram bot vytvorený (@BotFather)
-- [x] Bot token uložený
-- [x] Channel vytvorený
-- [x] Bot je admin v channeli
-- [x] Bot má "Post messages" permission
-- [x] Account record vytvorený v databáze
-- [x] Plugin aktivovaný
-- [x] Test message poslaná úspešne
+### Facebook ✅
+- [x] Create Facebook App
+- [x] Create/Connect Business Page
+- [x] Get Page Access Token
+- [x] Store credentials
+
+### Instagram ✅
+- [x] Convert to Business account
+- [x] Connect to Facebook Page
+- [x] Get access token
+- [x] Get Instagram account ID
+
+### Twitter/X ✅
+- [x] Create Developer Account
+- [x] Create App
+- [x] Enable OAuth 2.0
+- [x] Complete OAuth flow
+- [x] Store tokens
+
+### LinkedIn ✅
+- [x] Create LinkedIn App
+- [x] Request API access
+- [x] Complete OAuth flow
+- [x] Store tokens & person URN
+
+### YouTube ✅
+- [x] Create Google Cloud Project
+- [x] Enable YouTube Data API v3
+- [x] Create OAuth credentials
+- [x] Complete OAuth flow
+- [x] Store tokens & channel ID
+
+### TikTok ⚠️
+- [x] Create Developer Account
+- [x] Create App
+- [ ] **Submit for audit** (required!)
+- [x] Complete OAuth flow
+- [x] Store tokens & open_id
 
 ---
 
 ## 🔍 Troubleshooting
 
-### "Telegram bot token not configured"
+### Authentication Errors
 
-Skontrolujte či v databáze existuje account record:
+**"Invalid credentials"**
+- Check API keys/tokens
+- Verify OAuth flow completed
+- Check token expiration
 
-```sql
-SELECT * FROM wp_ai_seo_social_accounts WHERE platform = 'telegram';
-```
+**"Token expired"**
+- Refresh tokens automatically handled
+- Check refresh_token is stored
+- Re-authenticate if needed
 
-### "Chat not found"
+### Publishing Errors
 
-- Skontrolujte Channel ID
-- Pre public channel: `@channelname`
-- Pre private channel: číselné ID (napr. `-100123456789`)
+**"Content too long"**
+- Check platform limits (see Rate Limits table)
+- Content is automatically validated before publishing
 
-### "Bot is not a member of the channel"
+**"Media required"** (Instagram, YouTube, TikTok)
+- These platforms require media
+- Provide image/video URL in `media` array
 
-- Bot musí byť pridaný ako administrator
-- Otvorte Channel Settings → Administrators
+**"Rate limit exceeded"**
+- Posts automatically queued
+- Wait times shown in error message
+- Check rate limit stats
 
-### "Insufficient rights to send messages"
+### Platform-Specific Issues
 
-- Bot potrebuje "Post messages" permission
-- Otvorte Bot v Administrators a povoľte túto permission
+**Facebook:**
+- Ensure Page Access Token (not User Access Token)
+- Check page permissions
 
-### Rate limit warnings v logoch
+**Instagram:**
+- Must be Business/Creator account
+- Must be connected to Facebook Page
 
-Normálne - Rate Limiter funguje správne. Posty sa automaticky zařadia do fronty.
+**Twitter:**
+- Check OAuth 2.0 PKCE flow
+- Verify app permissions
 
----
+**LinkedIn:**
+- Verify w_member_social permission
+- Check person_urn format
 
-## 📈 Štatistiky
+**YouTube:**
+- Check quota limits (10,000 units/day)
+- Video upload = 1600 units
 
-```php
-$manager = AI_SEO_Social_Media_Manager::get_instance();
-$stats = $manager->get_stats();
-
-print_r($stats);
-```
-
-Output:
-
-```php
-array(
-    'database' => array(
-        'total_accounts' => 1,
-        'active_accounts' => 1,
-        'total_posts' => 10,
-        'published_posts' => 8,
-        'scheduled_posts' => 2,
-        'failed_posts' => 0,
-    ),
-    'platforms' => array(
-        'total' => 1,
-        'active' => 1,
-        'platforms' => array('telegram'),
-    ),
-    'rate_limits' => array(
-        'telegram' => array(
-            'limits' => array('minute' => 30, 'hour' => 1000, 'day' => 10000),
-            'remaining' => array('minute' => 28, 'hour' => 995, 'day' => 9990),
-            'usage_percent' => array('minute' => 6.67, 'hour' => 0.5, 'day' => 0.1),
-        ),
-    ),
-)
-```
-
----
-
-## 🎯 Ďalšie Kroky
-
-### Pripravované Platformy:
-
-1. **Facebook** (P0) - Coming soon
-2. **Instagram** (P0) - Coming soon
-3. **LinkedIn** (P1) - Coming soon
-4. **Twitter/X** (P1) - Coming soon
-5. **YouTube** (P2) - Coming soon
-6. **TikTok** (P2) - Coming soon
-
-### Admin UI (Fáza 6):
-
-- Settings page (API credentials)
-- Post composer (visual editor)
-- Calendar view (scheduled posts)
-- Analytics dashboard
-- Trend monitor
+**TikTok:**
+- App MUST be audited by TikTok
+- Without audit, API calls will fail
 
 ---
 
 ## 💡 Best Practices
 
-### 1. Testujte na Private Channel
-
-Pred použitím na production channeli, testujte na private test channeli.
-
-### 2. Použite Queue pre Hromadné Posty
+### 1. Content Strategy
 
 ```php
-// Namiesto 10x publish_now()
-foreach ($posts as $post) {
-    $manager->schedule_post($post, $schedule_time, ['telegram']);
-    $schedule_time = date('Y-m-d H:i:s', strtotime($schedule_time . ' +30 minutes'));
+// Customize per platform
+$content = array(
+    'telegram' => 'Casual message with emojis 🚀',
+    'facebook' => 'Longer, engaging post with story',
+    'twitter' => 'Short, punchy message #hashtag',
+    'linkedin' => 'Professional update with insights',
+    'instagram' => 'Visual story with hashtags #instagood',
+);
+
+foreach ($content as $platform => $text) {
+    $manager->publish_now($text, array($platform));
 }
 ```
 
-### 3. Monitorujte Rate Limits
+### 2. Scheduling Strategy
 
 ```php
-$rate_limiter = AI_SEO_Social_Rate_Limiter::get_instance();
-$remaining = $rate_limiter->get_remaining('telegram');
+// Stagger posts across platforms
+$platforms = array('telegram', 'facebook', 'twitter', 'linkedin');
+$base_time = strtotime('+1 hour');
 
-if ($remaining['minute'] < 5) {
-    // Čakajte alebo použite queue
+foreach ($platforms as $i => $platform) {
+    $schedule_time = date('Y-m-d H:i:s', $base_time + ($i * 900)); // 15 min apart
+    $manager->schedule_post($content, $schedule_time, array($platform));
 }
 ```
 
-### 4. Používajte Tone a Category
+### 3. Media Optimization
 
 ```php
-$manager->publish_now($content, ['telegram'], array(
-    'tone' => 'professional', // alebo casual, funny, etc.
-    'category' => 'crypto', // pre trend tracking
-));
+// Use appropriate media for each platform
+$media = array(
+    'instagram' => 'https://example.com/square-1080x1080.jpg',
+    'facebook' => 'https://example.com/landscape-1200x630.jpg',
+    'twitter' => 'https://example.com/card-1200x675.jpg',
+);
+```
+
+### 4. Error Handling
+
+```php
+$result = $manager->publish_now($content, $platforms);
+
+foreach ($result as $platform => $status) {
+    if (is_wp_error($status)) {
+        // Log error
+        error_log("Failed to publish to {$platform}: " . $status->get_error_message());
+
+        // Notify admin
+        wp_mail(get_option('admin_email'), 'Social Media Error', $status->get_error_message());
+    }
+}
 ```
 
 ---
 
-## 📞 Podpora
+## 📞 Support & Documentation
 
-**Dokumentácia:**
-- SOCIAL_MEDIA_PLAN.md
-- SOCIAL_MEDIA_ARCHITECTURE.md
-- SOCIAL_MEDIA_USAGE.md (tento súbor)
+**Complete Documentation:**
+- SOCIAL_MEDIA_PLAN.md - Implementation plan
+- SOCIAL_MEDIA_ARCHITECTURE.md - Technical architecture
+- SOCIAL_MEDIA_USAGE.md - This file
 
-**Telegram Bot API:**
-- https://core.telegram.org/bots/api
+**API Documentation:**
+- Telegram: https://core.telegram.org/bots/api
+- Facebook: https://developers.facebook.com/docs/graph-api
+- Instagram: https://developers.facebook.com/docs/instagram-api
+- Twitter: https://developer.twitter.com/en/docs/twitter-api
+- LinkedIn: https://learn.microsoft.com/en-us/linkedin/marketing/
+- YouTube: https://developers.google.com/youtube/v3
+- TikTok: https://developers.tiktok.com/
 
 **GitHub:**
 - https://github.com/cryptotrust1/acechange-playground
@@ -438,4 +635,4 @@ $manager->publish_now($content, ['telegram'], array(
 
 **Vytvorené:** AceChange Development Team
 **Aktualizované:** 2025-01-17
-**Verzia:** Phase 2 (Core + Telegram)
+**Verzia:** Phase 3 (ALL 7 Platforms Complete)
