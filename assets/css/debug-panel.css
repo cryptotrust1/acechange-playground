@@ -1,0 +1,68 @@
+/**
+ * AI SEO Manager - Debug Panel Styles
+ * Additional styles for debug panel (base styles are inline in view)
+ */
+
+/* Additional responsiveness */
+@media (max-width: 782px) {
+    .ai-seo-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-seo-debug-controls .alignleft,
+    .ai-seo-debug-controls .alignright {
+        float: none !important;
+        text-align: left;
+        margin-bottom: 10px;
+    }
+
+    #log-search {
+        min-width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .ai-seo-debug-controls,
+    .tablenav,
+    .toggle-log-details {
+        display: none !important;
+    }
+
+    .log-details {
+        display: block !important;
+        page-break-inside: avoid;
+    }
+}
+
+/* Accessibility improvements */
+.ai-seo-debug-panel a:focus,
+.ai-seo-debug-panel button:focus {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+}
+
+/* Loading states */
+.ai-seo-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.ai-seo-loading::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+    border: 2px solid #ccc;
+    border-top-color: #2271b1;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

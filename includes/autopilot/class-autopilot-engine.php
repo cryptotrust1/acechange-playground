@@ -15,6 +15,8 @@ class AI_SEO_Manager_Autopilot_Engine {
     private $ai_manager;
     private $db;
     private $approval_workflow;
+    private $logger;
+    private $performance;
 
     public static function get_instance() {
         if (null === self::$instance) {
@@ -28,6 +30,12 @@ class AI_SEO_Manager_Autopilot_Engine {
         $this->ai_manager = AI_SEO_Manager_AI_Manager::get_instance();
         $this->db = AI_SEO_Manager_Database::get_instance();
         $this->approval_workflow = AI_SEO_Manager_Approval_Workflow::get_instance();
+
+        // Initialize debug tools if available
+        if (class_exists('AI_SEO_Manager_Debug_Logger')) {
+            $this->logger = AI_SEO_Manager_Debug_Logger::get_instance();
+            $this->performance = AI_SEO_Manager_Performance_Monitor::get_instance();
+        }
 
         $this->init_hooks();
     }
@@ -158,6 +166,18 @@ class AI_SEO_Manager_Autopilot_Engine {
         $type = $recommendation->recommendation_type;
         $action_data = maybe_unserialize($recommendation->action_data);
 
+        if ($this->logger) {
+            $this->logger->info('Executing autopilot recommendation', array(
+                'recommendation_id' => $recommendation->id,
+                'post_id' => $post_id,
+                'type' => $type,
+            ));
+        }
+
+        if ($this->performance) {
+            $this->performance->start('execute_recommendation_' . $recommendation->id);
+        }
+
         $result = false;
 
         switch ($type) {
@@ -179,7 +199,14 @@ class AI_SEO_Manager_Autopilot_Engine {
 
             default:
                 $this->db->log('autopilot_warning', "Unknown recommendation type: {$type}");
+                if ($this->logger) {
+                    $this->logger->warning("Unknown recommendation type", array('type' => $type));
+                }
                 break;
+        }
+
+        if ($this->performance) {
+            $this->performance->stop('execute_recommendation_' . $recommendation->id);
         }
 
         if ($result) {
@@ -189,10 +216,25 @@ class AI_SEO_Manager_Autopilot_Engine {
             // Log success
             $this->db->log('autopilot_success', "Executed recommendation #{$recommendation->id} for post {$post_id}");
 
+            if ($this->logger) {
+                $this->logger->info('Autopilot recommendation executed successfully', array(
+                    'recommendation_id' => $recommendation->id,
+                    'post_id' => $post_id,
+                ));
+            }
+
             // Fire action
             do_action('ai_seo_manager_content_optimized', $post_id);
 
             return true;
+        } else {
+            if ($this->logger) {
+                $this->logger->warning('Autopilot recommendation execution failed', array(
+                    'recommendation_id' => $recommendation->id,
+                    'post_id' => $post_id,
+                    'type' => $type,
+                ));
+            }
         }
 
         return false;

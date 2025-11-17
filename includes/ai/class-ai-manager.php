@@ -15,6 +15,8 @@ class AI_SEO_Manager_AI_Manager {
     private $settings;
     private $active_provider;
     private $db;
+    private $logger;
+    private $performance;
 
     public static function get_instance() {
         if (null === self::$instance) {
@@ -31,6 +33,12 @@ class AI_SEO_Manager_AI_Manager {
         $this->claude_client = new AI_SEO_Manager_Claude_Client();
         $this->openai_client = new AI_SEO_Manager_OpenAI_Client();
         $this->db = AI_SEO_Manager_Database::get_instance();
+
+        // Initialize debug logger if available
+        if (class_exists('AI_SEO_Manager_Debug_Logger')) {
+            $this->logger = AI_SEO_Manager_Debug_Logger::get_instance();
+            $this->performance = AI_SEO_Manager_Performance_Monitor::get_instance();
+        }
     }
 
     /**
@@ -63,14 +71,39 @@ class AI_SEO_Manager_AI_Manager {
      * Analýza SEO obsahu s automatickým fallbackom
      */
     public function analyze_seo_content($content, $focus_keyword = '', $provider = null) {
+        // Debug: Start performance tracking
+        if ($this->performance) {
+            $this->performance->start('analyze_seo_content');
+        }
+
+        if ($this->logger) {
+            $this->logger->debug('Starting SEO content analysis', array(
+                'provider' => $provider ?? $this->active_provider,
+                'keyword' => $focus_keyword,
+                'content_length' => strlen($content),
+            ));
+        }
+
         $client = $this->get_client($provider);
         $result = $client->analyze_seo_content($content, $focus_keyword);
 
         // Pokus o fallback pri chybe
         if (is_wp_error($result)) {
             $primary_error = $result->get_error_message();
+
+            if ($this->logger) {
+                $this->logger->warning('Primary AI provider failed', array(
+                    'provider' => $provider ?? $this->active_provider,
+                    'error' => $primary_error,
+                ));
+            }
+
             $fallback_client = $this->get_fallback_client($provider ?? $this->active_provider);
             if ($fallback_client) {
+                if ($this->logger) {
+                    $this->logger->info('Attempting fallback provider');
+                }
+
                 $result = $fallback_client->analyze_seo_content($content, $focus_keyword);
 
                 // Log ak aj fallback zlyhal
@@ -83,6 +116,17 @@ class AI_SEO_Manager_AI_Manager {
                             'keyword' => $focus_keyword
                         )
                     );
+
+                    if ($this->logger) {
+                        $this->logger->error('Both AI providers failed', array(
+                            'primary_error' => $primary_error,
+                            'fallback_error' => $result->get_error_message(),
+                        ));
+                    }
+                } else {
+                    if ($this->logger) {
+                        $this->logger->info('Fallback provider succeeded');
+                    }
                 }
             } else {
                 // Log ak nie je dostupný fallback
@@ -90,6 +134,27 @@ class AI_SEO_Manager_AI_Manager {
                     'AI provider failed and no fallback available',
                     array('error' => $primary_error, 'keyword' => $focus_keyword)
                 );
+
+                if ($this->logger) {
+                    $this->logger->error('No fallback provider available', array(
+                        'error' => $primary_error,
+                    ));
+                }
+            }
+        } else {
+            if ($this->logger) {
+                $this->logger->info('SEO content analysis completed successfully');
+            }
+        }
+
+        // Debug: Stop performance tracking
+        if ($this->performance) {
+            $metric = $this->performance->stop('analyze_seo_content');
+            if ($metric && $this->logger) {
+                $this->logger->debug('SEO analysis performance', array(
+                    'duration' => round($metric['duration'], 4) . 's',
+                    'memory' => $metric['memory_used'],
+                ));
             }
         }
 
