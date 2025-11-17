@@ -1,6 +1,6 @@
 # AI SEO Manager Pro - WordPress Plugin
 
-🤖 Inteligentný AI SEO Manažér s Claude AI, automatickou analýzou a approval workflow
+🤖 Inteligentný AI SEO Manažér s Claude AI, automatickou analýzou a approval workflow + AI Social Media Manager
 
 ## 🎯 Funkcie
 
@@ -99,6 +99,36 @@ AI pracuje ako profesionálny SEO konzultant:
 - ✅ ALT Texts - Automatické ALT texty pre obrázky
 - ✅ Headings - Optimalizácia nadpisov
 - ✅ Internal Links - Návrhy interných linkov
+
+### 6. 📱 AI Social Media Manager
+Komplexný systém pre správu social media:
+
+**Podporované Platformy:**
+- ✅ **Telegram** - Bot messaging s channel support
+- ✅ **Facebook** - Pages a Groups posting
+- ✅ **Instagram** - Photos, videos, carousel posts
+- ✅ **Twitter/X** - Tweets s media support
+- ✅ **LinkedIn** - Company pages a personal profiles
+- ✅ **YouTube** - Video uploads s descriptions
+- ✅ **TikTok** - Short video sharing
+
+**Hlavné Funkcie:**
+- 🤖 **AI Content Generation** - Automatické generovanie obsahu pre každú platformu
+- 📅 **Scheduler & Queue** - Plánovanie príspevkov, retry logic
+- 📊 **Analytics** - Získavanie štatistík z platforiem
+- 🎨 **Composer** - Vizuálny editor pre tvorbu príspevkov
+- 📈 **Performance Tracking** - Top posts, best posting times
+- 🔄 **Multi-Platform Publishing** - Publikuj na viacero platforiem naraz
+- ⚡ **Rate Limiting** - Automatická kontrola API limitov
+- 🔐 **Bezpečné Credential Storage** - Šifrované ukladanie API kľúčov
+
+**Komponenty:**
+- Platform Clients pre všetky 7 platforiem
+- AI Content Generator s platform optimization
+- Scheduler s exponential backoff retry
+- Analytics s reporting a trend analysis
+- Admin UI s Dashboard, Composer, Calendar
+- Databázová štruktúra pre posts, queue, analytics
 
 ## 📋 Inštalácia
 
@@ -301,6 +331,17 @@ Po zapnutí debug módu sa zobrazí nové menu **Debug Logs** kde môžete:
 **Detailná dokumentácia:** Pozri [DEBUG.md](DEBUG.md)
 
 ## 🎉 Changelog
+
+### v2.0.0 (2025-01-17)
+- 🚀 **NEW: AI Social Media Manager**
+  - ✅ Podpora pre 7 platforiem (Telegram, Facebook, Instagram, Twitter, LinkedIn, YouTube, TikTok)
+  - ✅ AI Content Generator s platform optimization
+  - ✅ Scheduler & Queue Manager s retry logic
+  - ✅ Analytics Component s reporting
+  - ✅ Admin UI (Dashboard, Composer, Calendar, Analytics)
+  - ✅ Rate Limiting pre všetky platformy
+  - ✅ Multi-platform publishing
+  - ✅ Kompletné testy (Unit + E2E)
 
 ### v1.0.0 (2025-01-15)
 - ✅ Prvé vydanie
