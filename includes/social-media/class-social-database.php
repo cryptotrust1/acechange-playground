@@ -537,6 +537,85 @@ class AI_SEO_Social_Database {
     }
 
     // =================================================================
+    /**
+     * Update post status
+     *
+     * @param int $post_id Post ID
+     * @param string $status New status
+     * @return int|false Number of rows updated or false on error
+     */
+    public function update_post_status($post_id, $status) {
+        return $this->wpdb->update(
+            $this->tables['posts'],
+            array('status' => $status),
+            array('id' => $post_id),
+            array('%s'),
+            array('%d')
+        );
+    }
+
+    /**
+     * Get accounts with optional filters
+     *
+     * @param array $args Query arguments
+     * @return array Array of account objects
+     */
+    public function get_accounts($args = array()) {
+        $defaults = array(
+            'status' => null,
+            'platform' => null,
+            'limit' => 100,
+            'offset' => 0,
+            'orderby' => 'created_at',
+            'order' => 'DESC',
+        );
+
+        $args = wp_parse_args($args, $defaults);
+
+        $where = array('1=1');
+        $prepare_values = array();
+
+        if ($args['status']) {
+            $where[] = 'status = %s';
+            $prepare_values[] = $args['status'];
+        }
+
+        if ($args['platform']) {
+            $where[] = 'platform = %s';
+            $prepare_values[] = $args['platform'];
+        }
+
+        $where_clause = implode(' AND ', $where);
+
+        $prepare_values[] = (int) $args['limit'];
+        $prepare_values[] = (int) $args['offset'];
+
+        $query = "SELECT * FROM {$this->tables['accounts']}
+                  WHERE {$where_clause}
+                  ORDER BY {$args['orderby']} {$args['order']}
+                  LIMIT %d OFFSET %d";
+
+        if (!empty($prepare_values)) {
+            $query = $this->wpdb->prepare($query, $prepare_values);
+        }
+
+        $results = $this->wpdb->get_results($query);
+
+        // Decode JSON fields
+        if ($results) {
+            foreach ($results as &$account) {
+                if (!empty($account->credentials)) {
+                    $account->credentials = json_decode($account->credentials, true);
+                }
+                if (!empty($account->settings)) {
+                    $account->settings = json_decode($account->settings, true);
+                }
+            }
+        }
+
+        return $results ?: array();
+    }
+
     // ADDITIONAL METHODS for other tables will be added as needed
     // =================================================================
 
