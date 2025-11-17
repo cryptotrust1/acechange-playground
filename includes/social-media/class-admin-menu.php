@@ -127,8 +127,13 @@ class AI_SEO_Social_Admin_Menu {
         wp_localize_script('ai-seo-social-admin', 'aiSeoSocial', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('ai_seo_social_nonce'),
+            'dashboardUrl' => admin_url('admin.php?page=ai-seo-social-media'),
+            'composerUrl' => admin_url('admin.php?page=ai-seo-social-composer'),
+            'calendarUrl' => admin_url('admin.php?page=ai-seo-social-calendar'),
+            'analyticsUrl' => admin_url('admin.php?page=ai-seo-social-analytics'),
+            'accountsUrl' => admin_url('admin.php?page=ai-seo-social-accounts'),
             'strings' => array(
-                'confirm_delete' => __('Are you sure you want to delete this post?', 'ai-seo-manager'),
+                'confirm_delete' => __('Are you sure you want to delete this account?', 'ai-seo-manager'),
                 'generating' => __('Generating content...', 'ai-seo-manager'),
                 'publishing' => __('Publishing...', 'ai-seo-manager'),
                 'scheduling' => __('Scheduling...', 'ai-seo-manager'),

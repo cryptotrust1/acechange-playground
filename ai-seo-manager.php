@@ -124,6 +124,7 @@ class AI_SEO_Manager {
             require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-scheduler.php';
             require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-analytics.php';
             require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-admin-menu.php';
+            require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/class-ajax-handler.php';
 
             // Platform Clients
             require_once AI_SEO_MANAGER_PLUGIN_DIR . 'includes/social-media/platforms/class-platform-client.php';
@@ -169,6 +170,7 @@ class AI_SEO_Manager {
             AI_SEO_Social_Scheduler::get_instance();
             AI_SEO_Social_Analytics::get_instance();
             AI_SEO_Social_Admin_Menu::get_instance();
+            AI_SEO_Social_AJAX_Handler::get_instance();
         }
 
         // Načítanie prekladov

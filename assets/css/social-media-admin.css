@@ -1,0 +1,162 @@
+/**
+ * AI SEO Social Media - Admin CSS
+ */
+
+/* Modals */
+.social-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100000;
+    overflow: auto;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content {
+    position: relative;
+    background: #fff;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 0;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+.modal-close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 24px;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
+
+/* Loading spinner */
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Platform credentials fields */
+.platform-credentials {
+    display: none;
+}
+
+.platform-credentials.active {
+    display: block;
+}
+
+.form-row {
+    margin-bottom: 15px;
+}
+
+.form-row label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.form-row input[type="text"],
+.form-row input[type="password"],
+.form-row select {
+    width: 100%;
+    padding: 8px;
+}
+
+/* Variations modal */
+.variation-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.variation-number {
+    font-weight: 600;
+    color: #2271b1;
+    margin-bottom: 10px;
+}
+
+.variation-content {
+    background: #f6f7f7;
+    padding: 10px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+}
+
+/* Notices */
+.notice {
+    position: relative;
+    padding: 12px 35px 12px 12px;
+}
+
+.notice-dismiss {
+    position: absolute;
+    top: 0;
+    right: 1px;
+    border: none;
+    margin: 0;
+    padding: 9px;
+    background: none;
+    color: #787c82;
+    cursor: pointer;
+}
+
+.notice-dismiss:hover {
+    color: #d63638;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .modal-content {
+        margin: 20px;
+        max-width: none;
+    }
+}

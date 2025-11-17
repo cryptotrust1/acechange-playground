@@ -154,6 +154,17 @@ abstract class AI_SEO_Social_Platform_Client {
     }
 
     /**
+     * Test credentials (to be implemented by child classes)
+     *
+     * @param array $credentials Credentials to test
+     * @return true|WP_Error True on success, WP_Error on failure
+     */
+    public function test_credentials($credentials) {
+        // Default implementation - child classes should override
+        return new WP_Error('not_implemented', 'Test credentials not implemented for this platform');
+    }
+
+    /**
      * Get platform capabilities
      */
     public function get_capabilities() {
